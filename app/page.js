@@ -1,6 +1,6 @@
 'use client';
 
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 
 const menus = [
   {
@@ -10,7 +10,7 @@ const menus = [
     badge: 'Inventaris',
     icon: 'inspect',
     action: 'Buka Menu Inventarisasi Unit',
-    href: '/inventarisasi-unit'
+    href: 'https://unitirigasi.estatepg1.online/'
   },
   {
     title: 'Early Warning Unit',
@@ -29,8 +29,19 @@ const menus = [
     icon: 'stock',
     action: 'Buka Menu Summary Cost',
     href: '/summary-cost'
+  },
+  {
+    title: 'Portal Inspeksi Irigasi',
+    subtitle: 'Sistem Inspeksi Irigasi',
+    description: 'Portal untuk melakukan inspeksi irigasi.',
+    badge: 'Inspeksi',
+    icon: 'inspect',
+    action: 'Buka Portal Inspeksi Irigasi',
+    href: 'https://audit5ririgasi.estatepg1.online/'
   }
 ];
+
+const INVENTORY_RETURN_LOADING_KEY = 'inventory-return-loading';
 
 function Icon({ type }) {
   if (type === 'inspect') {
@@ -60,11 +71,34 @@ function Logo({ compact = false }) {
 
 export default function Home() {
   const [loading, setLoading] = useState(false);
+  const [loadingSubtitle, setLoadingSubtitle] = useState('Membuka Sistem Irigasi...');
+
+  useEffect(() => {
+    const showReturnLoading = () => {
+      if (sessionStorage.getItem(INVENTORY_RETURN_LOADING_KEY) !== 'true') return;
+
+      sessionStorage.removeItem(INVENTORY_RETURN_LOADING_KEY);
+      setLoadingSubtitle('Membuka Sistem Inventarisasi Unit...');
+      setLoading(true);
+      window.setTimeout(() => setLoading(false), 900);
+    };
+
+    showReturnLoading();
+    window.addEventListener('pageshow', showReturnLoading);
+
+    return () => window.removeEventListener('pageshow', showReturnLoading);
+  }, []);
 
   const go = (href) => {
-    if (href === 'https://k3inspeksi.estatepg1.online/') {
+    if (href === 'https://k3inspeksi.estatepg1.online/' || href === 'https://unitirigasi.estatepg1.online/') {
+      if (href === 'https://unitirigasi.estatepg1.online/') {
+        setLoadingSubtitle('Membuka Sistem Inventarisasi Unit...');
+      }
       setLoading(true);
       window.setTimeout(() => {
+        if (href === 'https://unitirigasi.estatepg1.online/') {
+          sessionStorage.setItem(INVENTORY_RETURN_LOADING_KEY, 'true');
+        }
         window.location.href = href;
       }, 900);
       return;
@@ -81,7 +115,7 @@ export default function Home() {
             <Logo />
             <div className="loading-spinner" aria-hidden="true" />
             <div className="loading-title">Memuat Laman</div>
-            <div className="loading-subtitle">Membuka Sistem Irigasi...</div>
+            <div className="loading-subtitle">{loadingSubtitle}</div>
           </div>
         </div>
       )}
