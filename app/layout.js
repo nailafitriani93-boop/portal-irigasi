@@ -2,7 +2,10 @@ import './globals.css';
 
 export const metadata = {
   title: 'Portal Dashboard Irigasi',
-  description: 'Portal terpusat sistem irigasi Estate PG 1'
+  description: 'Portal terpusat sistem irigasi Estate PG 1',
+  icons: {
+    icon: '/download-removebg-preview.png'
+  }
 };
 
 export default function RootLayout({ children }) {
